@@ -1,0 +1,108 @@
+--  Create the 'emp' table
+--
+CREATE TABLE employee (
+    empno           INTEGER NOT NULL CONSTRAINT emp_pk PRIMARY KEY,
+    ename           VARCHAR,
+    job             VARCHAR,
+    mgr             INTEGER,
+    hiredate        DATE,
+    sal             INTEGER CONSTRAINT emp_sal_ck CHECK (sal > 0),
+    comm            INTEGER,
+    deptno          INTEGER CONSTRAINT emp_ref_dept_fk
+                        REFERENCES department(deptno));
+
+INSERT INTO employee VALUES (7369,'SMITH','CLERK',7902,'17-DEC-80',800,NULL,20);
+INSERT INTO employee VALUES (7499,'ALLEN','SALESMAN',7698,'20-FEB-81',1600,300,30);
+INSERT INTO employee VALUES (7521,'WARD','SALESMAN',7698,'22-FEB-81',1250,500,30);
+INSERT INTO employee VALUES (7566,'JONES','MANAGER',7839,'02-APR-81',2975,NULL,20);
+INSERT INTO employee VALUES (7654,'MARTIN','SALESMAN',7698,'28-SEP-81',1250,1400,30);
+INSERT INTO employee VALUES (7698,'BLAKE','MANAGER',7839,'01-MAY-81',2850,NULL,30);
+INSERT INTO employee VALUES (7782,'CLARK','MANAGER',7839,'09-JUN-81',2450,NULL,10);
+INSERT INTO employee VALUES (7788,'SCOTT','ANALYST',7566,'19-APR-87',3000,NULL,20);
+INSERT INTO employee VALUES (7839,'KING','PRESIDENT',NULL,'17-NOV-81',5000,NULL,10);
+INSERT INTO employee VALUES (7844,'TURNER','SALESMAN',7698,'08-SEP-81',1500,0,30);
+INSERT INTO employee VALUES (7876,'ADAMS','CLERK',7788,'23-MAY-87',1100,NULL,20);
+INSERT INTO employee VALUES (7900,'JAMES','CLERK',7698,'03-DEC-81',950,NULL,30);
+INSERT INTO employee VALUES (7902,'FORD','ANALYST',7566,'03-DEC-81',3000,NULL,20);
+INSERT INTO employee VALUES (7934,'MILLER','CLERK',7782,'23-JAN-82',1300,NULL,10);
+
+========== department ===========
+CREATE TABLE department (
+    deptno          INTEGER NOT NULL CONSTRAINT dept_pk PRIMARY KEY,
+    dname           VARCHAR CONSTRAINT dept_dname_uq UNIQUE,
+    loc             VARCHAR);
+
+insert into department values(11,'Development','US');
+insert into department values(21,'Finance','Dallas');
+insert into department values(31,'HR','Chicago');
+INSERT INTO department VALUES (10,'ACCOUNTING','NEW YORK');
+INSERT INTO department VALUES (20,'RESEARCH','DALLAS');
+INSERT INTO department VALUES (30,'SALES','CHICAGO');
+INSERT INTO department VALUES (40,'OPERATIONS','BOSTON');
+
+
+
+
+
+============  Create the 'jobhist' table  ========
+
+CREATE TABLE jobhist (
+    empno           INTEGER NOT NULL,
+    startdate       DATE NOT NULL,
+    enddate         DATE,
+    job             VARCHAR,
+    sal             INTEGER,
+    comm            INTEGER,
+    deptno          INTEGER,
+    chgdesc         VARCHAR,
+    CONSTRAINT jobhist_pk PRIMARY KEY (empno, startdate),
+    CONSTRAINT jobhist_ref_emp_fk FOREIGN KEY (empno)
+        REFERENCES employee(empno) ON DELETE CASCADE,
+    CONSTRAINT jobhist_ref_dept_fk FOREIGN KEY (deptno)
+        REFERENCES department (deptno) ON DELETE SET NULL,
+    CONSTRAINT jobhist_date_chk CHECK (startdate <= enddate));
+
+
+INSERT INTO jobhist VALUES (7369,'17-DEC-80',NULL,'CLERK',800,NULL,20,'New Hire');
+INSERT INTO jobhist VALUES (7499,'20-FEB-81',NULL,'SALESMAN',1600,300,30,'New Hire');
+INSERT INTO jobhist VALUES (7521,'22-FEB-81',NULL,'SALESMAN',1250,500,30,'New Hire');
+INSERT INTO jobhist VALUES (7566,'02-APR-81',NULL,'MANAGER',2975,NULL,20,'New Hire');
+INSERT INTO jobhist VALUES (7654,'28-SEP-81',NULL,'SALESMAN',1250,1400,30,'New Hire');
+INSERT INTO jobhist VALUES (7698,'01-MAY-81',NULL,'MANAGER',2850,NULL,30,'New Hire');
+INSERT INTO jobhist VALUES (7782,'09-JUN-81',NULL,'MANAGER',2450,NULL,10,'New Hire');
+INSERT INTO jobhist VALUES (7788,'19-APR-87','12-APR-88','CLERK',1000,NULL,20,'New Hire');
+INSERT INTO jobhist VALUES (7788,'13-APR-88','04-MAY-89','CLERK',1040,NULL,20,'Raise');
+INSERT INTO jobhist VALUES (7788,'05-MAY-90',NULL,'ANALYST',3000,NULL,20,'Promoted to Analyst');
+INSERT INTO jobhist VALUES (7839,'17-NOV-81',NULL,'PRESIDENT',5000,NULL,10,'New Hire');
+INSERT INTO jobhist VALUES (7844,'08-SEP-81',NULL,'SALESMAN',1500,0,30,'New Hire');
+INSERT INTO jobhist VALUES (7876,'23-MAY-87',NULL,'CLERK',1100,NULL,20,'New Hire');
+INSERT INTO jobhist VALUES (7900,'03-DEC-81','14-JAN-83','CLERK',950,NULL,10,'New Hire');
+INSERT INTO jobhist VALUES (7900,'15-JAN-83',NULL,'CLERK',950,NULL,30,'Changed to Dept 30');
+INSERT INTO jobhist VALUES (7902,'03-DEC-81',NULL,'ANALYST',3000,NULL,20,'New Hire');
+INSERT INTO jobhist VALUES (7934,'23-JAN-82',NULL,'CLERK',1300,NULL,10,'New Hire');
+
+===================
+
+===== SQL Queries ====
+
+1. find second highest salary
+	select emp.ename,emp.sal from employee emp where 2=(select count(distinct sal) from employee emp1 where emp.sal<=emp1.sal);
+2.  How to get 3 Highest salaries records from Employee table?
+	select * from employee emp where 3 >= (select count(distinct sal) from employee emp1 where emp.sal<=emp1.sal) order by emp.sal desc;
+2. .Query to find duplicate rows in table?(click here for explaination)
+	Select * from Employee a where row_id != select max(row_id) for Employee b where a.Employee_num=b.Employee_num;
+3. How to fetch  monthly Salary of Employee if annual salary is given?(click here for Explaination)
+	Select Employee_name,Salary/12 as ‘Monthly Salary’ from employee;
+4. What is the Query to fetch last record from the table?
+	select * from employee where CTID=(select max(CTID) from employee);
+5. What is Query to display first 5 Records from Employee table?
+6. How to Display Odd rows in Employee table?
+	Select * from(Select rownum as rno,E.* from Employee E) where Mod(rno,2)=1;
+    Select * from(Select rownum as rno,E.* from Employee) where Mod(rno,2)=0;
+7. How Can i create table with same structure of Employee table? (along with Data)
+    Create table Employee_1 as Select * from Employee where 1=2; 
+8 How Can i create table with same structure of Employee table? (without data just table structure)
+    Create table Employee_1 as Select * from Employee where 1=1; 
+9. Inner Join 
+    select * from employee emp inner join  department dept on  emp.deptno=dept.deptno;
+    

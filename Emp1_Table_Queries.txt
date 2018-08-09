@@ -1,0 +1,19 @@
+-- Create Table
+CREATE TABLE employees1 (emp_id int NOT NULL,emp_name varchar DEFAULT NULL,mng_id int DEFAULT NULL,PRIMARY KEY (emp_id));
+
+INSERT INTO employees (emp_id,emp_name,mng_id) VALUES (1,'Joe','2');
+INSERT INTO employees (emp_id,emp_name,mng_id) VALUES (2,'Green',NULL);
+INSERT INTO employees (emp_id,emp_name,mng_id) VALUES (3,'Jen','2');
+INSERT INTO employees (emp_id,emp_name,mng_id) VALUES (4,'Brown','1');
+INSERT INTO employees (emp_id,emp_name,mng_id) VALUES (5,'Harry','1');
+INSERT INTO employees (emp_id,emp_name,mng_id) VALUES (6,'Jenny','4');
+
+
+10. SQL Statement for “Find the employees who are managers”
+SELECT DISTINCT e.emp_id AS mng_id, e.emp_name AS mng_name FROM employees1 e, employees1 m WHERE e.emp_id = m.mng_id;
+    
+10. SQL Statement for “Find the managers with the count of subordinates”    
+SELECT COUNT(emp.emp_id) AS emp_count, mng.mng_name AS mng_name FROM employees1 emp, (SELECT DISTINCT e.emp_id AS mng_id, e.emp_name AS mng_name FROM employees1 e, employees1 m WHERE e.emp_id = m.mng_id) mng WHERE emp.mng_id = mng.mng_id GROUP BY mng.mng_id, mng.mng_name;
+
+11. SQL Statement for “Find the managers with the count of subordinates greater than 1 (or any other number)
+SELECT COUNT(emp.emp_id) AS emp_count, mng.mng_name AS mng_name FROM employees1 emp, (SELECT DISTINCT e.emp_id AS mng_id, e.emp_name AS mng_name FROM employees1 e, employees1 m WHERE e.emp_id = m.mng_id) mng WHERE emp.mng_id = mng.mng_id GROUP BY mng.mng_id, mng.mng_name having count(emp.emp_id)>1;
