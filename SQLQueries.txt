@@ -85,7 +85,7 @@ INSERT INTO jobhist VALUES (7934,'23-JAN-82',NULL,'CLERK',1300,NULL,10,'New Hire
 
 ===== SQL Queries ====
 
-1. find second highest salary
+# 1. find second highest salary
 	select emp.ename,emp.sal from employee emp where 2=(select count(distinct sal) from employee emp1 where emp.sal<=emp1.sal);
 2.  How to get 3 Highest salaries records from Employee table?
 	select * from employee emp where 3 >= (select count(distinct sal) from employee emp1 where emp.sal<=emp1.sal) order by emp.sal desc;
